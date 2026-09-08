@@ -440,7 +440,7 @@ function OverviewCard({
   icon: Icon,
 }: {
   title: string;
-  value?: string;
+  value?: string | undefined;
   icon: typeof FileAudio;
 }) {
   const has = typeof value === "string" && value.trim().length > 0;
