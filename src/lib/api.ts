@@ -3,12 +3,52 @@ export const API_URL =
   "http://127.0.0.1:8000";
 
 export type CallAnalysis = {
+  call_purpose?: string;
+  customer_issue?: string;
+  resolution_status?: string;
   actions_taken_by_agent?: string;
   next_steps?: string;
   summary_from_customer_perspective?: string;
   summary_from_agent_perspective?: string;
   [key: string]: unknown;
 };
+
+/** Read a field from the analysis object, tolerating naming variations. */
+export function analysisField(
+  analysis: CallAnalysis | undefined,
+  keys: string[],
+): string | undefined {
+  if (!analysis) return undefined;
+  const entries = Object.entries(analysis);
+  for (const key of keys) {
+    const target = key.replace(/[^a-z0-9]/gi, "").toLowerCase();
+    for (const [k, v] of entries) {
+      if (k.replace(/[^a-z0-9]/gi, "").toLowerCase() !== target) continue;
+      const text = stringify(v);
+      if (text) return text;
+    }
+  }
+  return undefined;
+}
+
+function stringify(value: unknown): string | undefined {
+  if (typeof value === "string") return value.trim() || undefined;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) {
+    const parts = value.map((v) => stringify(v)).filter(Boolean) as string[];
+    return parts.length ? parts.map((p) => `• ${p}`).join("\n") : undefined;
+  }
+  if (value && typeof value === "object") {
+    const parts = Object.entries(value)
+      .map(([k, v]) => {
+        const s = stringify(v);
+        return s ? `${k.replace(/_/g, " ")}: ${s}` : undefined;
+      })
+      .filter(Boolean) as string[];
+    return parts.length ? parts.join("\n") : undefined;
+  }
+  return undefined;
+}
 
 export type AnalyzeResponse = {
   transcript?: string;
