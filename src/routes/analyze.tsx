@@ -377,22 +377,10 @@ function ResultView({
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <OverviewCard
-          title="Call Purpose"
-          value={analysis.summary_from_customer_perspective}
-          icon={MessageSquareText}
-        />
-        <OverviewCard
-          title="Customer Issue"
-          value={analysis.summary_from_customer_perspective}
-          icon={UserRound}
-        />
-        <OverviewCard
-          title="Resolution Status"
-          value={analysis.actions_taken_by_agent}
-          icon={BadgeCheck}
-        />
-        <OverviewCard title="Next Steps" value={analysis.next_steps} icon={RotateCcw} />
+        <OverviewCard title="Call Purpose" value={purpose} icon={MessageSquareText} />
+        <OverviewCard title="Customer Issue" value={issue} icon={UserRound} />
+        <OverviewCard title="Resolution Status" value={resolution} icon={BadgeCheck} />
+        <OverviewCard title="Next Steps" value={nextSteps} icon={RotateCcw} />
       </section>
 
       <section className="panel overflow-hidden">
