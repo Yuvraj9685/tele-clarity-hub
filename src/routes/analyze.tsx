@@ -305,18 +305,47 @@ function ResultView({
   onRerun: () => void;
 }) {
   const analysis = result.analysis ?? {};
-  const transcript = typeof result.transcript === "string" ? result.transcript : "";
+  const transcript =
+    typeof result.transcript === "string"
+      ? result.transcript
+      : typeof (result as Record<string, unknown>)["text"] === "string"
+        ? ((result as Record<string, unknown>)["text"] as string)
+        : "";
   const turns = parseTranscript(transcript);
 
+  const purpose = analysisField(analysis, ["call_purpose", "purpose", "call_reason", "reason"]);
+  const issue = analysisField(analysis, [
+    "customer_issue",
+    "issue",
+    "customer_problem",
+    "problem",
+    "customer_concern",
+  ]);
+  const resolution = analysisField(analysis, [
+    "resolution_status",
+    "resolution",
+    "status",
+    "call_resolved",
+    "is_resolved",
+  ]);
+  const actions = analysisField(analysis, ["actions_taken_by_agent", "agent_actions", "actions"]);
+  const nextSteps = analysisField(analysis, ["next_steps", "follow_up", "followup", "next_step"]);
+  const customerSummary = analysisField(analysis, [
+    "summary_from_customer_perspective",
+    "customer_summary",
+    "customer_perspective",
+  ]);
+  const agentSummary = analysisField(analysis, [
+    "summary_from_agent_perspective",
+    "agent_summary",
+    "agent_perspective",
+  ]);
+
   const insights = [
-    { title: "Agent Actions", value: analysis.actions_taken_by_agent, icon: BadgeCheck },
-    { title: "Next Steps", value: analysis.next_steps, icon: RotateCcw },
-    {
-      title: "Customer Perspective",
-      value: analysis.summary_from_customer_perspective,
-      icon: UserRound,
-    },
-    { title: "Agent Perspective", value: analysis.summary_from_agent_perspective, icon: Bot },
+    { title: "Actions Taken by Agent", value: actions, icon: BadgeCheck },
+    { title: "Next Steps", value: nextSteps, icon: RotateCcw },
+    { title: "Customer Perspective Summary", value: customerSummary, icon: UserRound },
+    { title: "Agent Perspective Summary", value: agentSummary, icon: Bot },
   ].filter((item) => typeof item.value === "string" && item.value.trim().length > 0);
 
   return (
